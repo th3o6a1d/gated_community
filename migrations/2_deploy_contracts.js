@@ -1,5 +1,4 @@
-var HelloBlockchain = artifacts.require("HelloBlockchain");
-var Arg = "Hello world";
+var GC = artifacts.require("GatedCommunity");
 module.exports = deployer => {
-    deployer.deploy(HelloBlockchain, Arg);
+    deployer.deploy(GC, "GatedCommunity", "GC");
 };
