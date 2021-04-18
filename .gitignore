@@ -11,3 +11,6 @@ build
 .env
 
 seed.txt
+
+*lock.json
+*-lock.json
