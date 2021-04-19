@@ -17,7 +17,7 @@ Example:
 - User visits site, signs message with wallet (MetaMask)
 - Server recovers public key from signed message
 - Server queries GatedCommunity contract to assess for token ownership
-- If there is a token associated with public key, issues json webtoken with authorization permission.
+- If there is a token associated with public key, issues json webtoken with authorization permission. This becomes the Bearer token that authorizes all future API calls for a period of time. 
 - If there is not a token associated with public key, user is prompted to purchase initial token offering or buy one on secondary market. 
 
 ## Tech Used:
