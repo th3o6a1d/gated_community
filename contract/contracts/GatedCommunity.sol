@@ -20,15 +20,5 @@ contract GatedCommunity is ERC721("GatedCommunity", "GC") {
         }
     }
 
-    
-    \\ TO DO
-
-    \\ function setTokenPrice() public {
-
-    \\ }
-
-    \\ function buyToken(_id) public {
-
-    \\ }
 
 }
