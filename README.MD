@@ -33,6 +33,7 @@ Example:
 
 ## To Do:
 
+- Clean up hardcoded env variables (contract location, etc)
 - Implement secondary market
 - Implement token burn mechanism
 - Implement royalty mechanism
