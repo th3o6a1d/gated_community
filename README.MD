@@ -10,8 +10,8 @@ Example:
 
 ## Governance Example
 - 1 token per address. 
-- 100 tokens max. 
-- community members may vote to burn the token of a bad actor. Burned token gets added back to initial pool.
+- Limited number of tokens, in this case, 100. 
+- Community members may vote to burn the token of a bad actor. Burned token gets added back to initial pool.
 
 ## The Authorization Flow:
 - User visits site, signs message with wallet (MetaMask)
@@ -35,4 +35,5 @@ Example:
 
 - Implement secondary market
 - Implement token burn mechanism
-- Deploy to testnet
+- Implement royalty mechanism
+- Improve testnet deploy
