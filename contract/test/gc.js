@@ -1,6 +1,5 @@
-const ERC721 = artifacts.require("OpenZeppelin/token/ERC721/ERC721");
+const ERC721 = artifacts.require("GatedCommunity");
 contract('ERC721', (accounts) => {
-
     it('get name of ERC721', async () => {
         const ERC721Instance = await ERC721.deployed();
         var name;
@@ -9,6 +8,4 @@ contract('ERC721', (accounts) => {
         // Write an assertion below to check the return value of RequestMessage.
         assert.equal('GatedCommunity', name, 'A correctness property about RequestMessage of ERC721');
     });
-
-    
 });

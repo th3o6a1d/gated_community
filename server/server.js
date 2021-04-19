@@ -8,7 +8,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
 const CHALLENGE_MSG = "Connect to GatedCommunity"
 const TOKEN_SECRET = '832nc80123mxk09ia0f9siamcosf'
 
-const abi = JSON.parse(fs.readFileSync('../build/contracts/GatedCommunity.json')).abi
+const abi = JSON.parse(fs.readFileSync('../contract/build/contracts/GatedCommunity.json')).abi
 const contractAddress = "0x06F166f3D26d13AeB0c55263Ef98211718EB2e4F"
 var contract = new web3.eth.Contract(abi,contractAddress)
 
@@ -52,7 +52,8 @@ app.post('/connect',function (req, res) {
   let address = web3.eth.accounts.recover(CHALLENGE_MSG,req.body.signedMsg);
   let connected = (address.toLowerCase() == req.body.address.toLowerCase())
   if (connected) {
-    contract.methods.balanceOf(address).call()
+    contract.methods.balanceOf(address)
+    .call()
     .then(function(x){
         let authorized = false
         if(x == 1) {authorized = true}
