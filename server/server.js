@@ -1,19 +1,19 @@
 const express = require('express')
 const app = express()
-const fs = require("fs");
-const ethUtils = require('ethereumjs-util')
+const fs = require("fs")
 const jwt = require('jsonwebtoken')
-var Contract = require('web3-eth-contract');
-Contract.setProvider('http://127.0.0.1:8545');
+const Web3 = require('web3')
+const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
 
-const abi = JSON.parse(fs.readFileSync('../build/contracts/GatedCommunity.json')).abi
-var contractAddress = "0xdA71E7D4BE04997f4e6012C6Ae54e975f9136DD1"
-var contract = new Contract(abi, contractAddress);
-
+const CHALLENGE_MSG = "Connect to GatedCommunity"
 const TOKEN_SECRET = '832nc80123mxk09ia0f9siamcosf'
 
+const abi = JSON.parse(fs.readFileSync('../build/contracts/GatedCommunity.json')).abi
+const contractAddress = "0x06F166f3D26d13AeB0c55263Ef98211718EB2e4F"
+var contract = new web3.eth.Contract(abi,contractAddress)
+
 function generateAccessToken(address) {
-  return jwt.sign(address, TOKEN_SECRET, { expiresIn: '1800s' })
+  return jwt.sign(address, TOKEN_SECRET, { expiresIn: '300s' })
 }
 
 function authenticateToken(req, res, next) {
@@ -21,24 +21,12 @@ function authenticateToken(req, res, next) {
   const token = authHeader && authHeader.split(' ')[1]
   if (token == null) return res.sendStatus(401)
   let verified = jwt.verify(token, TOKEN_SECRET)
-  next()
-}
-
-const extractAddress = function (signedMsg) {
-  let msg = 'Connect to GatedCommunity'
-  const msgBuffer = Buffer.from(msg, 'utf8')
-  const msgHash = ethUtils.hashPersonalMessage(msgBuffer)
-  const sigBuffer = ethUtils.toBuffer(signedMsg)
-  const sigParams = ethUtils.fromRpcSig(sigBuffer)
-  const pubKey = ethUtils.ecrecover(
-    msgHash,
-    sigParams.v,
-    sigParams.r,
-    sigParams.s,
-  )
-  const addressBuffer = ethUtils.publicToAddress(pubKey)
-  const address = ethUtils.bufferToHex(addressBuffer)
-  return address
+  let decodedToken = jwt.decode(token)
+  if (verified && decodedToken['authorization'] == true){
+    next()
+  } else {
+    res.json({'error':'Authentication error.'})
+  }
 }
 
 app.use(express.json())
@@ -53,21 +41,25 @@ app.use(function (req, res, next) {
   next()
 })
 
-app.get('/', function (req, res) {
-  res.send('Hello World')
+app.get('/tokenBalance', function(req,res){
+    contract.methods.balanceOf(address)
+    .call()
+    .then((x) => res.json(x))
+    .catch((e) => res.json(e))
 })
 
 app.post('/connect',function (req, res) {
-  let address = extractAddress(req.body.signedMsg)
-  let authorized = false
-  let connected = (address == req.body.address)
+  let address = web3.eth.accounts.recover(CHALLENGE_MSG,req.body.signedMsg);
+  let connected = (address.toLowerCase() == req.body.address.toLowerCase())
   if (connected) {
-    contract.methods.balanceOf("0xD54E9424ea8536e617f72402fB901FBe3358B4d0").call(function(result){
-        console.log(result)
-        if (result == 1) { authorized = true }
+    contract.methods.balanceOf(address).call()
+    .then(function(x){
+        let authorized = false
+        if(x == 1) {authorized = true}
         const token = generateAccessToken({ address: req.body.address, authorized: authorized })
-        res.json({ jwt: token, address: address, authorized:authorized })
+        res.json({jwt:token,address:address,authorized:authorized})
     })
+    .catch(e => res.json(e))
   } else {
     res.json({ message: 'Invalid signature.' })
   }
