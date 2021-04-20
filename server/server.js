@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const serverless = require('serverless-http')
 const fs = require("fs")
 const jwt = require('jsonwebtoken')
 const Web3 = require('web3')
@@ -48,6 +49,10 @@ app.get('/tokenBalance', function(req,res){
     .catch((e) => res.json(e))
 })
 
+app.get('/', function(req,res){
+  res.json({message:"Hello World!"})
+})
+
 app.post('/connect',function (req, res) {
   let address = web3.eth.accounts.recover(CHALLENGE_MSG,req.body.signedMsg);
   let connected = (address.toLowerCase() == req.body.address.toLowerCase())
@@ -66,8 +71,5 @@ app.post('/connect',function (req, res) {
   }
 })
 
-var server = app.listen(8080, 'localhost', function () {
-  var host = server.address().address
-  var port = server.address().port
-  console.log('Example app listening at http://%s:%s', host, port)
-})
+module.exports = app;
+module.exports.handler = serverless(app);
