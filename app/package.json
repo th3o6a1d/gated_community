@@ -19,7 +19,7 @@
     "web3": "^1.3.5"
   },
   "scripts": {
-    "abi": "cp ../contract/build/contracts/GatedCommunity.json ./src/abi",
+    "abi": "cp ../contract/build/contracts/GatedCommunity.json ./src/abi && cp ../contract/build/contracts/GatedCommunity.json ./server/",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
