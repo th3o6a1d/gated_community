@@ -1,17 +1,18 @@
-const express = require('express')
 const app = express()
+const express = require('express')
 const serverless = require('serverless-http')
 const fs = require("fs")
 const jwt = require('jsonwebtoken')
 const Web3 = require('web3')
-const web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"))
+const web3 = new Web3(new Web3.providers.HttpProvider(process.env.WEB3_URL))
 
-const CHALLENGE_MSG = "Connect to GatedCommunity"
-const TOKEN_SECRET = '832nc80123mxk09ia0f9siamcosf'
+const TOKEN_SECRET = process.env.TOKEN_SECRET
+const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS
+const CHALLENGE_MSG = process.env.CHALLENGE_MSG
 
 const abi = JSON.parse(fs.readFileSync('../contract/build/contracts/GatedCommunity.json')).abi
-const contractAddress = "0xD354263873eB68ad6bA29b2166848a2cae2B6C64"
-var contract = new web3.eth.Contract(abi,contractAddress)
+
+var contract = new web3.eth.Contract(abi,CONTRACT_ADDRESS)
 
 function generateAccessToken(address) {
   return jwt.sign(address, TOKEN_SECRET, { expiresIn: '300s' })

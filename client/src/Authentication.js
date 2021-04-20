@@ -6,14 +6,7 @@ import abi from './abi/GatedCommunity.json'
 
 let CHALLENGE_MSG = process.env.CHALLENGE_MSG
 let CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS
-
-if (process.env.NODE_ENV === "development") { 
-  'http://localhost:8080/authenticate'
-}
-
-if (process.env.NODE_ENV === "production") {
-  let AUTH_URL = window.location.href + "authenticate"
-}
+let AUTH_URL = process.env.AUTH_URL
 
 class Authentication extends Component {
 

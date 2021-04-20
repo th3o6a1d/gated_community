@@ -12,13 +12,12 @@ build
 
 seed.txt
 
+env.sh
 *lock.json
 *-lock.json
 *git.lock
 
 *.log
-
-client/src/abi
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
@@ -32,6 +31,8 @@ client/src/abi
 
 # production
 /build
+
+prod.sh
 
 # misc
 .DS_Store
