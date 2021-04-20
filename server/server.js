@@ -42,6 +42,8 @@ function authenticateToken(req, res, next) {
   }
 }
 
+const router = express.Router();
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(function (req, res, next) {
@@ -54,18 +56,18 @@ app.use(function (req, res, next) {
   next()
 })
 
-app.get('/tokenBalance', function(req,res){
+router.get('/tokenBalance', function(req,res){
     app.contract.methods.balanceOf(address)
     .call()
     .then((x) => res.json(x))
     .catch((e) => res.json(e))
 })
 
-app.get('/', function(req,res){
+router.get('/', function(req,res){
   res.json({message:"Hello World!"})
 })
 
-app.post('/authenticate',function (req, res) {
+router.post('/authenticate',function (req, res) {
   let address = app.web3.eth.accounts.recover(app.CHALLENGE_MESSAGE,req.body.signedMsg);
   let connected = (address.toLowerCase() == req.body.address.toLowerCase())
   if (connected) {
@@ -82,6 +84,8 @@ app.post('/authenticate',function (req, res) {
     res.json({ message: 'Invalid signature.' })
   }
 })
+
+app.use('/.netlify/functions/server', router);
 
 module.exports = app;
 module.exports.handler = serverless(app);
