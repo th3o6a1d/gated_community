@@ -21,7 +21,7 @@ if (process.env.NODE_ENV === "development"){
   app.TOKEN_SECRET="asdfasdfasd"
 }
 
-app.abi = JSON.parse(fs.readFileSync('../contract/build/contracts/GatedCommunity.json')).abi
+app.abi = JSON.parse(fs.readFileSync('./src/abi/GatedCommunity.json')).abi
 app.web3 = new Web3(new Web3.providers.HttpProvider(app.WEB3_URL))
 app.contract = new app.web3.eth.Contract(app.abi,app.CONTRACT_ADDRESS)
 
