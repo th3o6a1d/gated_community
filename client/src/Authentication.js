@@ -4,10 +4,6 @@ import web3 from 'web3'
 import jwt from 'jsonwebtoken'
 import abi from './abi/GatedCommunity.json'
 
-let CHALLENGE_MSG = process.env.CHALLENGE_MSG
-let CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS
-let AUTH_URL = process.env.AUTH_URL
-
 class Authentication extends Component {
 
   constructor(props) {
@@ -19,11 +15,23 @@ class Authentication extends Component {
   }
 
   componentDidMount() {
+
+    if (process.env.NODE_ENV === "production"){
+      this.CONTRACT_ADDRESS="0x5c89aBB2d8DCeEffcA0A409F8E3C4829b18D0c1D"
+      this.CHALLENGE_MESSAGE="Welcome to Gated Community!"
+      this.AUTH_URL="https://gatedcommunity.netlify.app/.netlify/functions/server/authenticate"
+    }
+    
+    if (process.env.NODE_ENV === "development"){
+      this.CONTRACT_ADDRESS="0xD354263873eB68ad6bA29b2166848a2cae2B6C64"
+      this.AUTH_URL="http://localhost:8080/authenticate"
+      this.CHALLENGE_MESSAGE="Welcome to Gated Community!"
+    }
+
     this.setState({error:null})
     this.web3 = new web3(window.ethereum);
     this.abi = abi.abi
-    console.log(abi)
-    this.contract = new this.web3.eth.Contract(this.abi,CONTRACT_ADDRESS)
+    this.contract = new this.web3.eth.Contract(this.abi,this.CONTRACT_ADDRESS)
     this.unclaimedTokens()
   }
 
@@ -46,8 +54,9 @@ class Authentication extends Component {
   connect() {
     this.setState({error:null})
     if(window.ethereum){
-      window.ethereum.request({ method: 'personal_sign', params: [window.ethereum.selectedAddress, CHALLENGE_MSG] })
-            .then(signedMsg => axios.post(AUTH_URL, { signedMsg: signedMsg, address: window.ethereum.selectedAddress }))
+      this.web3.eth.requestAccounts()
+            .then(x=>this.web3.eth.personal.sign(this.CHALLENGE_MESSAGE,x[0]))
+            .then(signedMsg => axios.post(this.AUTH_URL, { signedMsg: signedMsg, address: window.ethereum.selectedAddress }))
             .then(res => this.setState(jwt.decode(res.data.jwt)))
             .then(this.unclaimedTokens)
             .catch(e => this.setState({error:e.message}))

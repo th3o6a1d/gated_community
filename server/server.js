@@ -1,21 +1,32 @@
-const app = express()
 const express = require('express')
+const app = express()
 const serverless = require('serverless-http')
 const fs = require("fs")
 const jwt = require('jsonwebtoken')
 const Web3 = require('web3')
-const web3 = new Web3(new Web3.providers.HttpProvider(process.env.WEB3_URL))
 
-const TOKEN_SECRET = process.env.TOKEN_SECRET
-const CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS
-const CHALLENGE_MSG = process.env.CHALLENGE_MSG
+console.log(process.env.NODE_ENV)
 
-const abi = JSON.parse(fs.readFileSync('../contract/build/contracts/GatedCommunity.json')).abi
+if (process.env.NODE_ENV === "production"){
+  app.CONTRACT_ADDRESS="0x5c89aBB2d8DCeEffcA0A409F8E3C4829b18D0c1D"
+  app.CHALLENGE_MESSAGE="Welcome to Gated Community!"
+  app.WEB3_URL="https://rinkeby.infura.io/v3/c9f0e6b4f596427a8eb78f2b8e1a6d0a"
+  app.TOKEN_SECRET="asdfasdfasd"
+}
 
-var contract = new web3.eth.Contract(abi,CONTRACT_ADDRESS)
+if (process.env.NODE_ENV === "development"){
+  app.CONTRACT_ADDRESS="0x06F166f3D26d13AeB0c55263Ef98211718EB2e4F"
+  app.CHALLENGE_MESSAGE="Welcome to Gated Community!"
+  app.WEB3_URL="http://localhost:8545"
+  app.TOKEN_SECRET="asdfasdfasd"
+}
+
+app.abi = JSON.parse(fs.readFileSync('../contract/build/contracts/GatedCommunity.json')).abi
+app.web3 = new Web3(new Web3.providers.HttpProvider(app.WEB3_URL))
+app.contract = new app.web3.eth.Contract(app.abi,app.CONTRACT_ADDRESS)
 
 function generateAccessToken(address) {
-  return jwt.sign(address, TOKEN_SECRET, { expiresIn: '300s' })
+  return jwt.sign(address, app.TOKEN_SECRET, { expiresIn: '300s' })
 }
 
 function authenticateToken(req, res, next) {
@@ -44,7 +55,7 @@ app.use(function (req, res, next) {
 })
 
 app.get('/tokenBalance', function(req,res){
-    contract.methods.balanceOf(address)
+    app.contract.methods.balanceOf(address)
     .call()
     .then((x) => res.json(x))
     .catch((e) => res.json(e))
@@ -55,10 +66,10 @@ app.get('/', function(req,res){
 })
 
 app.post('/authenticate',function (req, res) {
-  let address = web3.eth.accounts.recover(CHALLENGE_MSG,req.body.signedMsg);
+  let address = app.web3.eth.accounts.recover(app.CHALLENGE_MESSAGE,req.body.signedMsg);
   let connected = (address.toLowerCase() == req.body.address.toLowerCase())
   if (connected) {
-    contract.methods.balanceOf(address)
+    app.contract.methods.balanceOf(address)
     .call()
     .then(function(x){
         let authorized = false
