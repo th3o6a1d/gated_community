@@ -34,8 +34,6 @@ env.sh
 
 prod.sh
 
-client/src/abi
-
 # misc
 .DS_Store
 .env.local
