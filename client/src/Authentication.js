@@ -4,11 +4,14 @@ import web3 from 'web3'
 import jwt from 'jsonwebtoken'
 import abi from './abi/GatedCommunity.json'
 
-let CHALLENGE_MSG = 'Connect to GatedCommunity'
-let CONTRACT_ADDRESS = "0xD354263873eB68ad6bA29b2166848a2cae2B6C64"
-let AUTH_URL = 'http://localhost:8080/authenticate'
+let CHALLENGE_MSG = process.env.CHALLENGE_MSG
+let CONTRACT_ADDRESS = process.env.CONTRACT_ADDRESS
 
-if (process.env.NODE_ENV === "PRODUCTION") {
+if (process.env.NODE_ENV === "development") { 
+  'http://localhost:8080/authenticate'
+}
+
+if (process.env.NODE_ENV === "production") {
   let AUTH_URL = window.location.href + "authenticate"
 }
 
