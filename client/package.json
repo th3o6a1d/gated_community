@@ -16,10 +16,11 @@
     "web3": "^1.3.5"
   },
   "scripts": {
-    "start": "cp -r ../contract/build/contracts/*.json ./src/abi && react-scripts start",
-    "build": "cp -r ../contract/build/contracts/*.json ./src/abi && react-scripts build",
-    "test": "cp -r ../contract/build/contracts/*.json ./src/abi && react-scripts test",
-    "eject": "cp -r ../contract/build/contracts/*.json ./src/abi && react-scripts eject"
+    "abi": "cp ../contract/build/contracts/GatedCommunity.json ./src/abi/",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
