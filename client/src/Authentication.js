@@ -7,7 +7,7 @@ let CHALLENGE_MSG = 'Connect to GatedCommunity'
 let CONTRACT_ADDRESS = "0x06F166f3D26d13AeB0c55263Ef98211718EB2e4F"
 let AUTH_URL = 'http://127.0.0.1:8080/connect'
 
-class LoginForm extends Component {
+class Authentication extends Component {
 
   constructor(props) {
     super(props)
@@ -22,7 +22,7 @@ class LoginForm extends Component {
     this.contract = new this.web3.eth.Contract(this.abi,CONTRACT_ADDRESS)
   }
 
-  obtainToken(res) {
+  obtainToken() {
     this.contract.methods.obtainToken()
         .send({ from: window.ethereum.selectedAddress })
         .then(this.connect)
@@ -30,15 +30,14 @@ class LoginForm extends Component {
   }
 
   connect() {
-    try{
+    if(window.ethereum){
         this.web3.eth.getAccounts()
             .then(accounts => window.ethereum.request({ method: 'personal_sign', params: [accounts[0], CHALLENGE_MSG] }))
             .then(signedMsg => axios.post(AUTH_URL, { signedMsg: signedMsg, address: window.ethereum.selectedAddress }))
             .then(res => this.setState(jwt.decode(res.data.jwt)))
             .catch((e) => console.log(e))
-    } catch(e) {
-        console.log(e)
-        alert(e)
+    } else {
+      alert('Please check for active MetaMask')
     }
   }
 
@@ -53,4 +52,4 @@ class LoginForm extends Component {
   }
 }
 
-export default LoginForm
+export default Authentication
