@@ -38,12 +38,12 @@ class Authentication extends Component {
   }
 
   obtainToken() {
-    this.setState({message:null,authorized:true})
+    this.setState({message:"Waiting for transaction to clear.",showPurchaseButton:false})
     this.contract.methods.obtainToken()
         .send({ from: window.ethereum.selectedAddress })
-        .on('confirmation', function(confirmationNumber, receipt){ this.setState({})})
+        .on('confirmation', function(confirmationNumber, receipt){ this.setState({message:"Transaction successful.",showPurchaseButton:false})})
         .then(this.connect)
-        .catch(e => this.setState({message:e.message}))
+        .catch(e => this.setState({message:e.message,showPurchaseButton:true}))
   }
 
   getRestrictedContent() {
@@ -85,7 +85,8 @@ class Authentication extends Component {
         { this.state.unclaimedTokens ? <div>Unclaimed Access Tokens: {this.state.unclaimedTokens}</div>:null}
         { this.state.message ? <div>{this.state.message}</div>:null}
         { this.state.address && this.state.authorized ? <div>{this.state.address} is connected and authorized.</div>: null}
-        { this.state.address && !this.state.authorized ? <div>{this.state.address} is connected but not authorized.<button onClick={this.obtainToken}>Get Token</button></div>:null}
+        { this.state.address && !this.state.authorized ? <div>{this.state.address} is connected but not authorized.</div> : null}
+        { this.state.showPurchaseButton ? <button onClick={this.obtainToken}>Get Token</button>:null}
         { !this.state.address ? <div>No address connected.<button onClick={this.connect}>Login</button></div> : null}
         { this.state.protectedContent ? <div>{this.state.protectedContent.message}</div>:null}
       </div>
