@@ -14,7 +14,7 @@ seed.txt
 
 *lock.json
 *-lock.json
-*.lock
+*git.lock
 
 *.log
 

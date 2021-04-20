@@ -10,7 +10,7 @@ const CHALLENGE_MSG = "Connect to GatedCommunity"
 const TOKEN_SECRET = '832nc80123mxk09ia0f9siamcosf'
 
 const abi = JSON.parse(fs.readFileSync('../contract/build/contracts/GatedCommunity.json')).abi
-const contractAddress = "0x06F166f3D26d13AeB0c55263Ef98211718EB2e4F"
+const contractAddress = "0xD354263873eB68ad6bA29b2166848a2cae2B6C64"
 var contract = new web3.eth.Contract(abi,contractAddress)
 
 function generateAccessToken(address) {
@@ -53,7 +53,7 @@ app.get('/', function(req,res){
   res.json({message:"Hello World!"})
 })
 
-app.post('/connect',function (req, res) {
+app.post('/authenticate',function (req, res) {
   let address = web3.eth.accounts.recover(CHALLENGE_MSG,req.body.signedMsg);
   let connected = (address.toLowerCase() == req.body.address.toLowerCase())
   if (connected) {

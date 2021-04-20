@@ -20,5 +20,8 @@ contract GatedCommunity is ERC721("GatedCommunity", "GC") {
         }
     }
 
+    function unclaimedTokens() public view returns(uint){
+        return maxTokens - tokenCount;
+    }
 
 }
