@@ -12,7 +12,9 @@ class Authentication extends Component {
     this.obtainToken = this.obtainToken.bind(this)
     this.unclaimedTokens = this.unclaimedTokens.bind(this)
     this.getRestrictedContent = this.getRestrictedContent.bind(this)
-    this.state = {showPurchaseButton:false}
+    this.balanceOf = this.balanceOf.bind(this)
+    this.componentDidMount = this.componentDidMount.bind(this)
+    this.state = {}
   }
 
   componentDidMount() {
@@ -29,7 +31,6 @@ class Authentication extends Component {
       this.CHALLENGE_MESSAGE="Welcome to Gated Community!"
     }
 
-    this.setState({message:null})
     this.web3 = new web3(window.ethereum);
     this.abi = abi.abi
     this.contract = new this.web3.eth.Contract(this.abi,this.CONTRACT_ADDRESS)
@@ -37,14 +38,18 @@ class Authentication extends Component {
 
     if(localStorage.getItem("jwt")){
       let token = localStorage.getItem("jwt")
-      this.setState(jwt.decode(token))
-      if(this.state['authorized']===false){this.setState({showPurchaseButton:true})}
+      let decoded = jwt.decode(token)
+      this.setState({ authorized: decoded['authorized'], address: decoded['address']},this.balanceOf)
+      // if(this.state['authorized']===false){this.setState({showPurchaseButton:true})}
       this.axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem("jwt")
       this.getRestrictedContent()
+      // this.setState(jwt.decode(token))
     } else {
       this.setState({showConnectButton:true})
     }
+    
     this.unclaimedTokens()
+    
   }
 
   obtainToken() {
@@ -55,6 +60,21 @@ class Authentication extends Component {
         .then(this.connect)
         .catch(e => this.setState({message:e.message,showPurchaseButton:true}))
   }
+
+  balanceOf() {
+    console.log(this.state)
+    this.contract.methods.balanceOf(this.state.address)
+        .call()
+        .then(x=>{
+          if(x==1) {
+            this.setState({member:true})
+           } else {
+            this.setState({member:false})
+          }
+        })
+        .catch(e => this.setState({message:e.message}))
+  }
+
 
   getRestrictedContent() {
     this.axios.get(this.BASE_URL + '/protectedEndpoint')
@@ -116,11 +136,11 @@ class Authentication extends Component {
     return (
       <div>
         { this.state.message ? <div>{this.state.message}</div>:null}
-        { this.state.address ? <div>Address: {this.state.address}</div>: null}
         { this.state.unclaimedTokens ? <div>Unclaimed Access Tokens: {this.state.unclaimedTokens}</div>:null}
+        { this.state.address ? <div>{this.state.address} {this.state.member ? "owns a membership token." : "does not own a membership token."}</div>: null}
         { this.state.showPurchaseButton ? <button onClick={this.obtainToken}>Get Token</button>:null}
         { this.state.showConnectButton ? <button onClick={this.connect}>Login</button> : null}
-        { this.state.protectedContent ? <div>{this.state.protectedContent.message}</div>:null}
+        { this.state.protectedContent ? <div className="protectedContent">{this.state.protectedContent.message}</div>:null}
       </div>
     )
   }

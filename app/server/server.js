@@ -72,7 +72,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 router.get('/protectedEndpoint', authenticateToken, function(req,res){
-  res.json({message:"Secret message"})
+  res.json({message:"This is the secret content that ownly token owners get to access."})
 })
 
 router.post('/authenticate',function (req, res) {

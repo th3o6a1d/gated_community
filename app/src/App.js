@@ -7,10 +7,8 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h2>GatedCommunity ERC721 Token Demo</h2>
-      </header>
-      <body>
         <Authentication />
-      </body>
+      </header>
     </div>
   );
 }
