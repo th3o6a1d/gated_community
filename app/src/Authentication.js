@@ -65,8 +65,8 @@ class Authentication extends Component {
     console.log(this.state)
     this.contract.methods.balanceOf(this.state.address)
         .call()
-        .then(x=>{
-          if(x==1) {
+        .then(tokenCount=>{
+          if(tokenCount===1) {
             this.setState({member:true})
            } else {
             this.setState({member:false})
