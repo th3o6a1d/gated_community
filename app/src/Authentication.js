@@ -168,7 +168,7 @@ class Authentication extends Component {
   render() {
     return (
       <div>
-        <div><a className="App-link" href="https://rinkeby.etherscan.io/address/{this.CONTRACT_ADDRESS}">Look at contract on Etherscan</a></div>
+        <div><a className="App-link" href={"https://rinkeby.etherscan.io/address/" +this.CONTRACT_ADDRESS}>Look at contract on Etherscan</a></div>
         {this.state.message ? <div className="message">{this.state.message}</div> : null}
         {this.state.unclaimedTokens ? (
           <div>Unclaimed membership tokens: {this.state.unclaimedTokens}</div>
