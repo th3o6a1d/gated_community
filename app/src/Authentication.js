@@ -14,19 +14,20 @@ class Authentication extends Component {
     this.getRestrictedContent = this.getRestrictedContent.bind(this)
     this.balanceOf = this.balanceOf.bind(this)
     this.componentDidMount = this.componentDidMount.bind(this)
+    this.totalTokenOwners = this.totalTokenOwners.bind(this)
     this.state = {}
   }
 
   componentDidMount() {
 
     if (process.env.NODE_ENV === "production"){
-      this.CONTRACT_ADDRESS="0x5c89aBB2d8DCeEffcA0A409F8E3C4829b18D0c1D"
+      this.CONTRACT_ADDRESS="0x738ccd02a55c54E84D768Aeac2bCe70d485708d2"
       this.CHALLENGE_MESSAGE="Welcome to Gated Community!"
       this.BASE_URL="https://gatedcommunity.netlify.app/.netlify/functions/server"
     }
     
     if (process.env.NODE_ENV === "development"){
-      this.CONTRACT_ADDRESS="0xab671897DbE345F63EB0E1fd553C7bC68dDE418B"
+      this.CONTRACT_ADDRESS="0x0f94a9FBe040754B1518f3043D811F8f35F98a8C"
       this.BASE_URL="http://localhost:8080"
       this.CHALLENGE_MESSAGE="Welcome to Gated Community!"
     }
@@ -43,21 +44,23 @@ class Authentication extends Component {
       // if(this.state['authorized']===false){this.setState({showPurchaseButton:true})}
       this.axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem("jwt")
       this.getRestrictedContent()
-      // this.setState(jwt.decode(token))
     } else {
       this.setState({showConnectButton:true})
     }
     
     this.unclaimedTokens()
+    this.totalTokenOwners()
     
   }
 
   obtainToken() {
     this.setState({message:"Waiting for transaction to clear.",showPurchaseButton:false})
     this.contract.methods.obtainToken()
-        .send({ from: window.ethereum.selectedAddress })
+        .send({ from: window.ethereum.selectedAddress, value: 100000000000000000 })
         .on('confirmation', function(confirmationNumber, receipt){ this.setState({message:"Transaction successful.",showPurchaseButton:false})})
         .then(this.connect)
+        .then(this.unclaimedTokens)
+        .then(this.totalTokenOwners)
         .catch(e => this.setState({message:e.message,showPurchaseButton:true}))
   }
 
@@ -66,7 +69,8 @@ class Authentication extends Component {
     this.contract.methods.balanceOf(this.state.address)
         .call()
         .then(tokenCount=>{
-          if(tokenCount===1) {
+          let x = parseInt(tokenCount)
+          if(x===1) {
             this.setState({member:true})
            } else {
             this.setState({member:false})
@@ -100,11 +104,11 @@ class Authentication extends Component {
         .catch(e => this.setState({message:e.message}))
   }
 
-  tokenOwners() {
+  totalTokenOwners() {
     this.setState({message:null})
-    this.contract.methods.tokenOwners()
+    this.contract.methods.totalTokenOwners()
         .call()
-        .then(x => this.setState({tokenOwners:this.tokenOwners}))
+        .then(x => this.setState({tokenOwners:x}))
         .catch(e => this.setState({message:e.message}))
   }
 
@@ -123,6 +127,7 @@ class Authentication extends Component {
             })
             .then(this.unclaimedTokens)
             .then(this.getRestrictedContent)
+            .then(this.balanceOf)
             .catch(e => this.setState({message:e.message}))
   } else {
     this.setState({message:"Please check that you have MetaMask installed and set to the correct network."})
@@ -131,12 +136,12 @@ class Authentication extends Component {
 
 
 
-
   render() {
     return (
       <div>
         { this.state.message ? <div>{this.state.message}</div>:null}
-        { this.state.unclaimedTokens ? <div>Unclaimed Access Tokens: {this.state.unclaimedTokens}</div>:null}
+        { this.state.unclaimedTokens ? <div>Unclaimed membership tokens: {this.state.unclaimedTokens}</div>:null}
+        { this.state.tokenOwners ? <div>Membership token owners: {this.state.tokenOwners}</div>:null}
         { this.state.address ? <div>{this.state.address} {this.state.member ? "owns a membership token." : "does not own a membership token."}</div>: null}
         { this.state.showPurchaseButton ? <button onClick={this.obtainToken}>Get Token</button>:null}
         { this.state.showConnectButton ? <button onClick={this.connect}>Login</button> : null}

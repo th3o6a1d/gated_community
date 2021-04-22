@@ -9,14 +9,14 @@ const cors = require('cors')
 console.log(process.env.NODE_ENV)
 
 if (process.env.NODE_ENV === "production"){
-  app.CONTRACT_ADDRESS="0x5c89aBB2d8DCeEffcA0A409F8E3C4829b18D0c1D"
+  app.CONTRACT_ADDRESS="0x738ccd02a55c54E84D768Aeac2bCe70d485708d2"
   app.CHALLENGE_MESSAGE="Welcome to Gated Community!"
   app.WEB3_URL="https://rinkeby.infura.io/v3/c9f0e6b4f596427a8eb78f2b8e1a6d0a"
   app.TOKEN_SECRET="asdfasdfasd"
 }
 
 if (process.env.NODE_ENV === "development"){
-  app.CONTRACT_ADDRESS="0xab671897DbE345F63EB0E1fd553C7bC68dDE418B"
+  app.CONTRACT_ADDRESS="0x0f94a9FBe040754B1518f3043D811F8f35F98a8C"
   app.CHALLENGE_MESSAGE="Welcome to Gated Community!"
   app.WEB3_URL="http://localhost:8545"
   app.TOKEN_SECRET="asdfasdfasd"
@@ -72,7 +72,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 router.get('/protectedEndpoint', authenticateToken, function(req,res){
-  res.json({message:"This is the secret content that ownly token owners get to access."})
+  res.json({message:"This is the secret content that only token owners get to access."})
 })
 
 router.post('/authenticate',function (req, res) {
