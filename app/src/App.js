@@ -6,7 +6,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h2>GatedCommunity ERC721 Token Demo</h2>
+        <h2>(Rinkeby Testnet) GatedCommunity ERC721 Token Demo</h2>
         <Authentication />
       </header>
     </div>
