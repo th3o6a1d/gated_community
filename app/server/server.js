@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === "production"){
 }
 
 if (process.env.NODE_ENV === "development"){
-  app.CONTRACT_ADDRESS="0x0f94a9FBe040754B1518f3043D811F8f35F98a8C"
+  app.CONTRACT_ADDRESS="0xaD3F92878036dE7A9bC1191d237A5eB38b614D86"
   app.CHALLENGE_MESSAGE="Welcome to Gated Community!"
   app.WEB3_URL="http://localhost:8545"
   app.TOKEN_SECRET="asdfasdfasd"
