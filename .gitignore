@@ -16,7 +16,7 @@ env.sh
 *lock.json
 *-lock.json
 *git.lock
-
+*.lock
 *.log
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
@@ -25,6 +25,8 @@ env.sh
 /node_modules
 /.pnp
 .pnp.js
+
+
 
 # testing
 /coverage

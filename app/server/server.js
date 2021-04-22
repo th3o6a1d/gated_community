@@ -6,8 +6,6 @@ const jwt = require('jsonwebtoken')
 const Web3 = require('web3')
 const cors = require('cors')
 
-
-
 console.log(process.env.NODE_ENV)
 
 if (process.env.NODE_ENV === "production"){
@@ -18,7 +16,7 @@ if (process.env.NODE_ENV === "production"){
 }
 
 if (process.env.NODE_ENV === "development"){
-  app.CONTRACT_ADDRESS="0x06F166f3D26d13AeB0c55263Ef98211718EB2e4F"
+  app.CONTRACT_ADDRESS="0xab671897DbE345F63EB0E1fd553C7bC68dDE418B"
   app.CHALLENGE_MESSAGE="Welcome to Gated Community!"
   app.WEB3_URL="http://localhost:8545"
   app.TOKEN_SECRET="asdfasdfasd"
@@ -30,20 +28,30 @@ app.contract = new app.web3.eth.Contract(app.abi,app.CONTRACT_ADDRESS)
 app.use(cors())
 
 function generateAccessToken(address) {
-  return jwt.sign(address, app.TOKEN_SECRET, { expiresIn: '300s' })
+  return jwt.sign(address, app.TOKEN_SECRET, { expiresIn: '1000s' })
 }
 
 function authenticateToken(req, res, next) {
+  
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
-  if (token == null) return res.sendStatus(401)
-  let verified = jwt.verify(token, app.TOKEN_SECRET)
-  if (verified && verified['authorized'] == true){
-    console.log('VERIFIED!')
-    next()
-  } else {
-    res.sendStatus(403)
+  if (token == null) {
+    return res.sendStatus(400)
   }
+
+  try {
+    let verified = jwt.verify(token, app.TOKEN_SECRET)
+    if (verified && verified['authorized'] == true){
+      next()
+    } else {
+      return res.sendStatus(403)
+    }
+  } catch(e){
+    console.log(e)
+    return res.sendStatus(401)
+  }
+
+
 }
 
 const router = express.Router();
@@ -62,15 +70,6 @@ router.use(function (req, res, next) {
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept',
-  )
-  req.accepts('application/json')
-  next()
-})
 
 router.get('/protectedEndpoint', authenticateToken, function(req,res){
   res.json({message:"Secret message"})
@@ -88,7 +87,7 @@ router.post('/authenticate',function (req, res) {
         const token = generateAccessToken({ address: req.body.address, authorized: authorized })
         res.json({jwt:token,address:address,authorized:authorized})
     })
-    .catch(e => res.json(e))
+    .catch(e => res.sendStatus(500))
   } else {
     res.sendStatus(403)
   }
