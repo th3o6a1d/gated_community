@@ -40,8 +40,7 @@ class Authentication extends Component {
     if(localStorage.getItem("jwt")){
       let token = localStorage.getItem("jwt")
       let decoded = jwt.decode(token)
-      this.setState({ authorized: decoded['authorized'], address: decoded['address']},this.balanceOf)
-      // if(this.state['authorized']===false){this.setState({showPurchaseButton:true})}
+      this.setState({ authorized: decoded['authorized'], address: decoded['address']}, this.balanceOf)
       this.axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem("jwt")
       this.getRestrictedContent()
     } else {
@@ -57,23 +56,24 @@ class Authentication extends Component {
     this.setState({message:"Waiting for transaction to clear.",showPurchaseButton:false})
     this.contract.methods.obtainToken()
         .send({ from: window.ethereum.selectedAddress, value: 100000000000000000 })
-        .on('confirmation', function(confirmationNumber, receipt){ this.setState({message:"Transaction successful.",showPurchaseButton:false})})
         .then(this.connect)
         .then(this.unclaimedTokens)
         .then(this.totalTokenOwners)
-        .catch(e => this.setState({message:e.message,showPurchaseButton:true}))
+        .catch(e => {
+          this.setState({message:e.message})
+          localStorage.clear()
+        })
   }
 
   balanceOf() {
-    console.log(this.state)
     this.contract.methods.balanceOf(this.state.address)
         .call()
         .then(tokenCount=>{
           let x = parseInt(tokenCount)
           if(x===1) {
-            this.setState({member:true})
+            this.setState({member:true,showPurchaseButton:false})
            } else {
-            this.setState({member:false})
+            this.setState({member:false,showPurchaseButton:true})
           }
         })
         .catch(e => this.setState({message:e.message}))
@@ -121,7 +121,6 @@ class Authentication extends Component {
             .then(signedMsg => axios.post(this.BASE_URL + '/authenticate', { signedMsg: signedMsg, address: window.ethereum.selectedAddress }))
             .then(res => {
               this.setState(jwt.decode(res.data.jwt))
-              if(this.state['authorized']===false){this.setState({showPurchaseButton:true})}
               this.axios.defaults.headers.common['Authorization'] = 'Bearer ' + res.data.jwt
               localStorage.setItem("jwt", res.data.jwt);
             })
