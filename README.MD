@@ -31,16 +31,21 @@ Example:
 
 ### Client and Server
 `npm install` in `./app` directory
+
 `NODE_ENV=development yarn start` to run client (`localhost:3000`)
+
 `NODE_ENV=development node server/server-local.js` to run server (`localhost:8080`)
 
 ### Contracts
 `npm i truffle -g`
 Run a local blockchain with Ganache or similar, served at port `8545`. 
+
 Deploy to local network: 
 `truffle migrate --compile-all --resert --network ganache`
+
 Deploy to Rinkeby:
 `truffle migrate --compile-all --resert --network rinkeby`
+
 Need to have your seed phrase in a `seed.txt` file, and an Infura endpoint.
 
 ## To Do:
