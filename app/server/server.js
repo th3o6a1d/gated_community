@@ -28,7 +28,7 @@ app.contract = new app.web3.eth.Contract(app.abi,app.CONTRACT_ADDRESS)
 app.use(cors())
 
 function generateAccessToken(address) {
-  return jwt.sign(address, app.TOKEN_SECRET, { expiresIn: '1000s' })
+  return jwt.sign(address, app.TOKEN_SECRET, { expiresIn: '24h' })
 }
 
 function authenticateToken(req, res, next) {

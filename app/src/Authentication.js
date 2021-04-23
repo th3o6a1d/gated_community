@@ -107,7 +107,8 @@ class Authentication extends Component {
           // localStorage.clear()
           this.setState({
             message:
-              'Invalid or expired browser authentication. Please reconnect.'
+              'Invalid or expired browser authentication. Please reconnect.',
+              showConnectButton:true
           })
         }
 
@@ -115,7 +116,8 @@ class Authentication extends Component {
           // localStorage.clear()
           this.setState({
             message:
-              'You must own a membership token to view protected content.'
+              'You must own a membership token to view protected content.',
+              showConnectButton:true
           })
         }
       })
