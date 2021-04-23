@@ -1,8 +1,12 @@
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/e53034de-5dd9-4845-bac8-d7976b490e50/deploy-status)](https://app.netlify.com/sites/gatedcommunity/deploys)
+
 # Gated Community
 Anonymous communities with finite membership based on a tradeable ERC721 compatible access token. 
+[Demo](https://gatedcommunity.netlify.app) (requires Chrome, MetaMask, set to Rinkeby testnet)
 
 ## The Concept
-The idea is to restrict access to physical or virtual content based on ownership of a token, in this case one based on ERC721. The tokens are "fungible" in the sense that they are can be listed for sale and transferred, but they are "non-fungible" in the sense that the token IDs are each unique, allowing tiered access or admin rights within an organization. The token can be configured to allow royalties to flow back to the owner after each sale.
+The idea is to restrict access to physical or virtual content based on ownership of a token, in this case one based on ERC721. The tokens are "fungible" in the sense that they  can be listed for sale and transferred, but they are "non-fungible" in the sense that the token IDs are each unique, not like ERC20, allowing tiered access or admin rights within an organization. The token can be configured to allow royalties to flow back to the owner after each sale.
 
 Example:
 - An exclusive restaurant where only 1000 token owners have the right to make a reservation. They can buy and sell this right on a secondary market. 
@@ -16,25 +20,31 @@ Example:
 ## The Authorization Flow:
 - User visits site, signs message with wallet (MetaMask)
 - Server recovers public key from signed message
-- Server queries GatedCommunity contract to assess for token ownership
+- Server queries contract to assess for token ownership
 - If there is a token associated with public key, issues json webtoken with authorization permission. This becomes the Bearer token that authorizes all future API calls for a period of time. 
 - If there is not a token associated with public key, user is prompted to purchase initial token offering or buy one on secondary market. 
 
 ## Tech Used:
 - solidity, truffle, ganache, vscode, create-react-app, json webtokens
 
-## Project Structure
+## Installation:
 
-- `./server` is a simple Node.js `express` server. `npm install` and use `node server.js` or `nodemon server.js` for development. This will run a server at `localhost:8080`
+### Client and Server
+`npm install` in `./app` directory
+`NODE_ENV=development yarn start` to run client (`localhost:3000`)
+`NODE_ENV=development node server/server-local.js` to run server (`localhost:8080`)
 
-- `./contract` is a `truffle` project. Start a `ganache` server at port `8545` to compile and deploy. May also deploy to rinkeby, but will need to put your seed phrase in a text file called `seed.txt`. Make sure to have MetaMask installed in your browser and 
-
-- `./client` is a `create-react-app` project. `yarn start` will run a client at `localhost:3000` that will send api calls to the `8080` port. 
+### Contracts
+`npm i truffle -g`
+Run a local blockchain with Ganache or similar, served at port `8545`. 
+Deploy to local network: 
+`truffle migrate --compile-all --resert --network ganache`
+Deploy to Rinkeby:
+`truffle migrate --compile-all --resert --network rinkeby`
+Need to have your seed phrase in a `seed.txt` file, and an Infura endpoint.
 
 ## To Do:
 
-- Clean up hardcoded env variables (contract location, etc)
 - Implement secondary market
 - Implement token burn mechanism
 - Implement royalty mechanism
-- Improve testnet deploy
